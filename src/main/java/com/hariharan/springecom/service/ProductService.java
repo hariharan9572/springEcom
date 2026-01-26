@@ -19,6 +19,9 @@ public class ProductService {
     @Autowired
     private ChatClient chatClient;
 
+    @Autowired
+    private AiImageGeneratorService aiImageGenService;
+
     public List<Product> getAllProducts() {
         return productRepo.findAll();
     }

@@ -55,7 +55,7 @@ public class ProductController {
     }
 
     @PostMapping("/product/generate-image")
-    public ResponseEntity<> generateImage(@RequestParam String name, @RequestParam String category, @RequestParam String description){
+    public ResponseEntity<?> generateImage(@RequestParam String name, @RequestParam String category, @RequestParam String description){
         try {
             byte[] aiImage = productService.generateImage(name, category, description);
             return new ResponseEntity<>(aiImage, HttpStatus.OK);
