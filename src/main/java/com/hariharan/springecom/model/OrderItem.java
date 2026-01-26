@@ -1,7 +1,5 @@
 package com.hariharan.springecom.model;
 
-import com.hariharan.springecom.model.dto.Order;
-import com.hariharan.springecom.model.Product;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,6 +1,6 @@
 package com.hariharan.springecom.repo;
 
-import com.hariharan.springecom.model.dto.Order;
+import com.hariharan.springecom.model.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

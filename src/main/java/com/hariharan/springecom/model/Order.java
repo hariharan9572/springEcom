@@ -1,6 +1,5 @@
-package com.hariharan.springecom.model.dto;
+package com.hariharan.springecom.model;
 
-import com.hariharan.springecom.model.OrderItem;
 import jakarta.persistence.*;
 import lombok.*;
 
