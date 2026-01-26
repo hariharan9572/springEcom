@@ -94,6 +94,29 @@ public class OrderService {
         order.setOrderItems(orderItems);
         Order savedOrder = orderRepo.save(order);
 
+        StringBuilder content = new StringBuilder();
+        content.append("Order Summary: \n");
+        content.append("Order  ID: ").append(savedOrder.getOrderId()).append("\n");
+        content.append("Customer: ").append(savedOrder.getCustomerName()).append("\n");
+        content.append("Email: ").append(savedOrder.getEmail()).append("\n");
+        content.append("Date: ").append(savedOrder.getOrderDate()).append("\n");
+        content.append("Status: ").append(savedOrder.getStatus()).append("\n");
+        content.append("Products: \n");
+
+        for(OrderItem orderItem : savedOrder.getOrderItems()){
+            content.append("- ").append(orderItem.getProduct().getName())
+                    .append(" x ").append(orderItem.getQuantity())
+                    .append(" = ").append(orderItem.getTotalPrice()).append("\n");
+        }
+
+        Document document = new Document(
+                UUID.randomUUID().toString(),
+                content.toString(),
+                Map.of("orderId", savedOrder.getOrderId())
+        );
+
+        vectorStore.add(List.of(document));
+
         List<OrderItemResponse> itemResponses = new ArrayList<>();
         for(OrderItem item : order.getOrderItems()){
             OrderItemResponse orderItemResponse = new OrderItemResponse(
