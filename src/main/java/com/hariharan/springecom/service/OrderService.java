@@ -6,6 +6,9 @@ import com.hariharan.springecom.model.Product;
 import com.hariharan.springecom.model.dto.*;
 import com.hariharan.springecom.repo.OrderRepo;
 import com.hariharan.springecom.repo.ProductRepo;
+import jakarta.transaction.Transactional;
+import org.springframework.ai.document.Document;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +16,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -22,6 +26,9 @@ public class OrderService {
     private ProductRepo productRepo;
     @Autowired
     private OrderRepo orderRepo;
+
+    @Autowired
+    private VectorStore vectorStore;
 
     public OrderResponse placeOrder(OrderRequest request) {
 
@@ -41,6 +48,37 @@ public class OrderService {
 
             product.setStockQuantity(product.getStockQuantity() - itemReq.quantity());
             productRepo.save(product);
+
+            String filter = String.format("productId == %s", String.valueOf(product.getId()));
+            vectorStore.delete(filter);
+
+            String updatedContent = String.format("""
+                Product Name: %s
+                Description: %s
+                Brand: %s
+                Category: %s
+                Price: %.2f
+                Release Date: %s
+                Available: %s
+                Stock: %s
+                """,
+                    product.getName(),
+                    product.getDescription(),
+                    product.getBrand(),
+                    product.getCategory(),
+                    product.getPrice(),
+                    product.getReleaseDate(),
+                    product.isProductAvailable(),
+                    product.getStockQuantity()
+            );
+
+            Document updatedDoc = new Document(
+                    UUID.randomUUID().toString(),
+                    updatedContent,
+                    Map.of("productId", String.valueOf(product.getId()))
+            );
+
+            vectorStore.add(List.of(updatedDoc));
 
             OrderItem orderItem = OrderItem.builder()
                     .product(product)
@@ -78,6 +116,7 @@ public class OrderService {
         return orderResponse;
     }
 
+    @Transactional
     public List<OrderResponse> getAllOrderResponses() {
 
         List<Order> orders = orderRepo.findAll();
